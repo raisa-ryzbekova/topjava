@@ -6,15 +6,19 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MealStorage implements Storage {
+import static org.slf4j.LoggerFactory.getLogger;
+
+public class MapMealStorage implements Storage {
+    private static final org.slf4j.Logger LOG = getLogger(MapMealStorage.class);
     private final AtomicInteger idAtomicCounter = new AtomicInteger(0);
     private Map<Integer, Meal> storage = new ConcurrentHashMap<>();
 
     @Override
-    public void save(Meal meal) {
+    public Meal save(Meal meal) {
         int id = idAtomicCounter.incrementAndGet();
         storage.put(id, meal);
         meal.setId(id);
+        return meal;
     }
 
     @Override
@@ -29,7 +33,12 @@ public class MealStorage implements Storage {
 
     @Override
     public void update(Meal meal) {
-        storage.put(meal.getId(), meal);
+        if (meal != null) {
+            storage.put(meal.getId(), meal);
+        } else {
+            LOG.warn("Resume with uuid = " + meal.getId() + " doesn't exist");
+            throw new NullPointerException();
+        }
     }
 
     @Override

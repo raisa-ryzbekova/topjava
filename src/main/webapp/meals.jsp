@@ -6,7 +6,7 @@
     <title>Meals</title>
 </head>
 <body>
-<h2>Meals</h2>
+<h2>Meals&nbsp;&nbsp;&nbsp;<a href="meals?action=save">Добавить</a></h2>
 <table border="1" cellpadding="8" cellspacing="0">
     <tr>
         <th>Описание</th>
@@ -18,7 +18,7 @@
     <c:forEach items="${meals}" var="meal">
         <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealWithExceed"/>
         <tr style="color:${meal.exceed ? 'red' : 'green'}">
-            <td><a href="meals?id=${meal.id}&action=view">${meal.description}</a></td>
+            <td><a href="meals?id=${meal.id}">${meal.description}</a></td>
             <td><%=formatLocalDateTime(meal.getDateTime())%></td>
             <td>${meal.calories}</td>
             <td><a href="meals?id=${meal.id}&action=edit">Редактировать</a></td>
