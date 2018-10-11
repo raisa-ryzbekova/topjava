@@ -78,8 +78,7 @@ public class MealServlet extends HttpServlet {
         String description = request.getParameter("description");
         String dateTime = request.getParameter("dateTime");
         String calories = request.getParameter("calories");
-        Meal meal = new Meal(TimeUtil.of(dateTime), description, Integer.valueOf(calories), Integer.valueOf(id));
-        mealStorage.delete(Integer.valueOf(id));
+        Meal meal = new Meal(Integer.valueOf(id), TimeUtil.of(dateTime), description, Integer.valueOf(calories));
         mealStorage.update(meal);
         response.sendRedirect(request.getContextPath() + "/meals");
     }

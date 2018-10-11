@@ -33,12 +33,7 @@ public class MapMealStorage implements Storage {
 
     @Override
     public void update(Meal meal) {
-        if (meal != null) {
-            storage.put(meal.getId(), meal);
-        } else {
-            LOG.warn("Resume with uuid = " + meal.getId() + " doesn't exist");
-            throw new NullPointerException();
-        }
+        storage.computeIfPresent(meal.getId(), (id, value) -> value = meal);
     }
 
     @Override

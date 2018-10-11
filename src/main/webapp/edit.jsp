@@ -1,3 +1,4 @@
+<%@ page import="java.time.LocalDateTime" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -10,15 +11,17 @@
     <input type="hidden" name="id" value="${meal.id}">
     <dl>
         <dt>Описание</dt>
-        <dd><input type="text" name="description" size=50 value="${meal.description!=null?meal.description:""}"></dd>
+        <dd><input type="text" name="description" size=50
+                   value="${meal.description!="description"?meal.description:""}"></dd>
     </dl>
     <dl>
         <dt>Дата/время</dt>
-        <dd><input type="datetime-local" name="dateTime" size=50 value="${meal.dateTime!=null?meal.dateTime:""}"></dd>
+        <dd><input type="datetime-local" name="dateTime" size=50
+                   value="<%=meal.getDateTime()!= LocalDateTime.MIN ? meal.getDateTime() : ""%>"></dd>
     </dl>
     <dl>
         <dt>Калории</dt>
-        <dd><input type="text" name="calories" size=50 value="${meal.calories!="0"?meal.calories:""}"></dd>
+        <dd><input type="text" name="calories" size=50 value="${meal.calories!="-1"?meal.calories:""}"></dd>
     </dl>
     <button type="submit">Сохранить</button>
     <button onclick="window.history.back()">Отменить</button>
