@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.repository.mock.InMemoryMealRepositoryImpl;
+import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.service.MealServiceImpl;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.user.ProfileRestController;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -21,11 +24,14 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
     private MealRepository repository;
+    private MealService mealService;
+    private ProfileRestController profileRestController = new ProfileRestController();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         repository = new InMemoryMealRepositoryImpl();
+        mealService = new MealServiceImpl(repository);
     }
 
     @Override
@@ -34,12 +40,13 @@ public class MealServlet extends HttpServlet {
         String id = request.getParameter("id");
 
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
+                SecurityUtil.authUserId(),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        repository.save(meal);
+        mealService.create(meal);
         response.sendRedirect("meals");
     }
 
@@ -49,16 +56,16 @@ public class MealServlet extends HttpServlet {
 
         switch (action == null ? "all" : action) {
             case "delete":
-                int id = getId(request);
-                log.info("Delete {}", id);
-                repository.delete(id);
+                int mealId = getId(request);
+                log.info("Delete {}", mealId);
+                mealService.delete(mealId, SecurityUtil.authUserId());
                 response.sendRedirect("meals");
                 break;
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
                         new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
-                        repository.get(getId(request));
+                        mealService.get(getId(request), SecurityUtil.authUserId());
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
