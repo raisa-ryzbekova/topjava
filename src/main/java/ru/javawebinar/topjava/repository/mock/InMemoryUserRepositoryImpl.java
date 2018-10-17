@@ -3,12 +3,15 @@ package ru.javawebinar.topjava.repository.mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import ru.javawebinar.topjava.model.AbstractBaseEntity;
+import ru.javawebinar.topjava.model.AbstractNamedEntity;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryUserRepositoryImpl implements UserRepository {
@@ -42,9 +45,9 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
     @Override
     public List<User> getAll() {
         log.info("getAll");
-        List<User> allUsers = new ArrayList<>(repository.values());
-        allUsers.sort(User.NAME_COMPARATOR.thenComparing(User.ID_COMPARATOR));
-        return allUsers;
+        return new ArrayList<>(repository.values()).stream()
+                .sorted(NAME_COMPARATOR.thenComparing(ID_COMPARATOR))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -55,4 +58,8 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
                 .findFirst()
                 .orElse(null);
     }
+
+    private final static Comparator<User> NAME_COMPARATOR = Comparator.comparing(AbstractNamedEntity::getName);
+
+    private final static Comparator<User> ID_COMPARATOR = Comparator.comparingInt(AbstractBaseEntity::getId);
 }

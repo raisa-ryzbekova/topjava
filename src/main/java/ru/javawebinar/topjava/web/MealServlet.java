@@ -24,14 +24,14 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
     private MealRepository repository;
-    private MealService mealService;
-    private ProfileRestController profileRestController = new ProfileRestController();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         repository = new InMemoryMealRepositoryImpl();
-        mealService = new MealServiceImpl(repository);
+        for (Meal meal : MealsUtil.MEALS) {
+            repository.save(meal, meal.getUserId());
+        }
     }
 
     @Override
@@ -46,7 +46,7 @@ public class MealServlet extends HttpServlet {
                 Integer.parseInt(request.getParameter("calories")));
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        mealService.create(meal);
+        repository.save(meal, SecurityUtil.authUserId());
         response.sendRedirect("meals");
     }
 
@@ -58,14 +58,14 @@ public class MealServlet extends HttpServlet {
             case "delete":
                 int mealId = getId(request);
                 log.info("Delete {}", mealId);
-                mealService.delete(mealId, SecurityUtil.authUserId());
+                repository.delete(mealId, SecurityUtil.authUserId());
                 response.sendRedirect("meals");
                 break;
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
                         new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
-                        mealService.get(getId(request), SecurityUtil.authUserId());
+                        repository.get(getId(request), SecurityUtil.authUserId());
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
@@ -73,7 +73,7 @@ public class MealServlet extends HttpServlet {
             default:
                 log.info("getAll");
                 request.setAttribute("meals",
-                        MealsUtil.getWithExceeded(repository.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
+                        MealsUtil.getWithExceeded(repository.getAll(SecurityUtil.authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }

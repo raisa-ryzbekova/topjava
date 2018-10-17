@@ -76,12 +76,6 @@ public class User extends AbstractNamedEntity {
     }
 
     @Override
-    public int hashCode() {
-
-        return Objects.hash(email, password, enabled, registered, roles, caloriesPerDay);
-    }
-
-    @Override
     public String toString() {
         return "User (" +
                 "id=" + id +
@@ -92,9 +86,4 @@ public class User extends AbstractNamedEntity {
                 ", caloriesPerDay=" + caloriesPerDay +
                 ')';
     }
-
-    public final static Comparator<User> NAME_COMPARATOR =
-            (user1, user2) -> user1.getName().compareTo(user2.getName());
-
-    public final static Comparator<User> ID_COMPARATOR = (user1, user2) -> user1.getId() - user2.getId();
 }

@@ -27,10 +27,6 @@ public class Meal extends AbstractBaseEntity {
         this.calories = calories;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public LocalDateTime getDateTime() {
         return dateTime;
     }
@@ -54,21 +50,4 @@ public class Meal extends AbstractBaseEntity {
     public Integer getUserId() {
         return userId;
     }
-
-    public boolean isNew() {
-        return id == null;
-    }
-
-    @Override
-    public String toString() {
-        return "Meal{" +
-                "id=" + id +
-                ", dateTime=" + dateTime +
-                ", description='" + description + '\'' +
-                ", calories=" + calories +
-                '}';
-    }
-
-    public final static Comparator<Meal> DATE_TIME_COMPARATOR =
-            (meal1, meal2) -> meal1.getDateTime().compareTo(meal2.getDateTime());
 }
