@@ -35,28 +35,28 @@ public class MealRestController {
 
     public Meal get(int mealId) {
         log.info("get {}", mealId);
-        return service.get(mealId, SecurityUtil.authUserId());
+        return service.get(mealId, SecurityUtil.userId);
     }
 
-    public void update(Meal meal, int mealId) {
-        log.info("update {} with id={}", meal, mealId);
-        assureIdConsistent(meal, mealId);
-        service.update(meal, mealId);
+    public void update(Meal meal, int userId) {
+        log.info("update {} with id={}", meal, userId);
+        assureIdConsistent(meal, userId);
+        service.update(meal, userId);
     }
 
     public void delete(int mealId) {
         log.info("delete {}", mealId);
-        service.delete(mealId, SecurityUtil.authUserId());
+        service.delete(mealId, SecurityUtil.userId);
     }
 
-    public List<MealWithExceed> getAllWithExceeded() {
+    public List<MealWithExceed> getAll() {
         log.info("getAll");
-        return getWithExceeded(service.getAll(SecurityUtil.authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+        return getWithExceeded(service.getAll(SecurityUtil.userId), SecurityUtil.authUserCaloriesPerDay());
     }
 
     public List<MealWithExceed> getAllFilteredDateTime(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         log.info("getAll");
-        return getFilteredWithExceeded(service.getAllFilteredDate(SecurityUtil.authUserId(), startDate, endDate),
+        return getFilteredWithExceeded(service.getAllFilteredDate(SecurityUtil.userId, startDate, endDate),
                 DEFAULT_CALORIES_PER_DAY, startTime, endTime);
     }
 }

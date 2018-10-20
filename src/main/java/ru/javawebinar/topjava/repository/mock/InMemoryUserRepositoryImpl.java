@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 @Repository
 public class InMemoryUserRepositoryImpl implements UserRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepositoryImpl.class);
+    private static final Comparator<User> NAME_COMPARATOR = Comparator.comparing(AbstractNamedEntity::getName);
+    private static final Comparator<User> ID_COMPARATOR = Comparator.comparingInt(AbstractBaseEntity::getId);
+
     private Map<Integer, User> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
@@ -45,7 +48,7 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
     @Override
     public List<User> getAll() {
         log.info("getAll");
-        return new ArrayList<>(repository.values()).stream()
+        return repository.values().stream()
                 .sorted(NAME_COMPARATOR.thenComparing(ID_COMPARATOR))
                 .collect(Collectors.toList());
     }
@@ -58,8 +61,4 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
                 .findFirst()
                 .orElse(null);
     }
-
-    private final static Comparator<User> NAME_COMPARATOR = Comparator.comparing(AbstractNamedEntity::getName);
-
-    private final static Comparator<User> ID_COMPARATOR = Comparator.comparingInt(AbstractBaseEntity::getId);
 }

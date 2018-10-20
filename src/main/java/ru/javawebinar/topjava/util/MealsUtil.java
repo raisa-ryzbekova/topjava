@@ -15,18 +15,18 @@ import static java.util.stream.Collectors.toList;
 
 public class MealsUtil {
     public static final List<Meal> MEALS = Arrays.asList(
-            new Meal(null, 1, LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
-            new Meal(null, 1, LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
-            new Meal(null, 1, LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500),
-            new Meal(null, 1, LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000),
-            new Meal(null, 1, LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500),
-            new Meal(null, 1, LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510),
-            new Meal(null, 2, LocalDateTime.of(2016, Month.MAY, 30, 10, 0), "Завтрак", 500),
-            new Meal(null, 2, LocalDateTime.of(2016, Month.MAY, 30, 13, 0), "Обед", 1000),
-            new Meal(null, 2, LocalDateTime.of(2016, Month.MAY, 30, 20, 0), "Ужин", 500),
-            new Meal(null, 2, LocalDateTime.of(2016, Month.MAY, 31, 10, 0), "Завтрак", 1000),
-            new Meal(null, 2, LocalDateTime.of(2016, Month.MAY, 31, 13, 0), "Обед", 500),
-            new Meal(null, 2, LocalDateTime.of(2016, Month.MAY, 31, 20, 0), "Ужин", 510)
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак1", 500),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед1", 1000),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин1", 500),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак1", 1000),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед1", 500),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин1", 510),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак2", 500),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед2", 1000),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин2", 500),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак2", 1000),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед2", 500),
+            new Meal(null, LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин2", 510)
     );
 
     public static final int DEFAULT_CALORIES_PER_DAY = 2000;
@@ -36,7 +36,7 @@ public class MealsUtil {
     }
 
     public static List<MealWithExceed> getFilteredWithExceeded(Collection<Meal> meals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
-        return getFilteredWithExceeded(meals, caloriesPerDay, meal -> DateTimeUtil.isBetweenDateTime(meal.getTime(), startTime, endTime));
+        return getFilteredWithExceeded(meals, caloriesPerDay, meal -> DateTimeUtil.isBetween(meal.getTime(), startTime, endTime));
     }
 
     private static List<MealWithExceed> getFilteredWithExceeded(Collection<Meal> meals, int caloriesPerDay, Predicate<Meal> filter) {
