@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
+import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
@@ -39,40 +41,40 @@ public class MealServiceTest {
     public void create() {
         Meal newMeal = new Meal(LocalDateTime.of(2018, 1, 3, 8, 0),
                 "Завтрак", 500);
-        Meal created = service.create(newMeal, 100000);
+        Meal created = service.create(newMeal, USER_ID);
         newMeal.setId(created.getId());
-        assertMatchMeals(service.getAll(100000), newMeal, MEAL_4, MEAL_3, MEAL_2, MEAL_1);
+        assertMatchMeals(service.getAll(USER_ID), newMeal, MEAL_4, MEAL_3, MEAL_2, MEAL_1);
     }
 
     @Test
     public void get() {
-        Meal meal = service.get(MEAL_1_ID, 100000);
+        Meal meal = service.get(MEAL_1_ID, USER_ID);
         assertMatchMeals(meal, MEAL_1);
     }
 
     @Test
     public void delete() {
-        service.delete(MEAL_1_ID, 100000);
-        assertMatchMeals(service.getAll(100000), MEAL_4, MEAL_3, MEAL_2);
+        service.delete(MEAL_1_ID, USER_ID);
+        assertMatchMeals(service.getAll(USER_ID), MEAL_4, MEAL_3, MEAL_2);
     }
 
     @Test
     public void getBetweenDates() {
         List<Meal> allBetweenDates = service.getBetweenDates(LocalDate.of(2018, 1, 1),
-                LocalDate.of(2018, 1, 1), 100000);
+                LocalDate.of(2018, 1, 1), USER_ID);
         assertMatchMeals(allBetweenDates, MEAL_3, MEAL_2, MEAL_1);
     }
 
     @Test
     public void getBetweenDateTimes() {
         List<Meal> allBetweenDates = service.getBetweenDateTimes(LocalDateTime.of(2018, 1, 1, 8, 0),
-                LocalDateTime.of(2018, 1, 1, 12, 0), 100000);
+                LocalDateTime.of(2018, 1, 1, 12, 0), USER_ID);
         assertMatchMeals(allBetweenDates, MEAL_2, MEAL_1);
     }
 
     @Test
     public void getAll() {
-        List<Meal> all = service.getAll(100000);
+        List<Meal> all = service.getAll(USER_ID);
         assertMatchMeals(all, MEAL_4, MEAL_3, MEAL_2, MEAL_1);
     }
 
@@ -81,18 +83,18 @@ public class MealServiceTest {
         Meal updated = new Meal(MEAL_1);
         updated.setDescription("UpdatedDescription");
         updated.setCalories(1500);
-        service.update(updated, 100000);
-        assertMatchMeals(service.get(MEAL_1_ID, 100000), updated);
+        service.update(updated, USER_ID);
+        assertMatchMeals(service.get(MEAL_1_ID, USER_ID), updated);
     }
 
     @Test(expected = NotFoundException.class)
     public void deletedNotFound() {
-        service.delete(MEAL_1_ID, 100001);
+        service.delete(MEAL_1_ID, ADMIN_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void getNotFound() {
-        service.get(MEAL_1_ID, 100001);
+        service.get(MEAL_1_ID, ADMIN_ID);
     }
 
     @Test(expected = NotFoundException.class)
@@ -100,13 +102,13 @@ public class MealServiceTest {
         Meal updated = new Meal(MEAL_1);
         updated.setDescription("UpdatedDescription");
         updated.setCalories(1500);
-        service.update(updated, 100001);
+        service.update(updated, ADMIN_ID);
     }
 
     @Test(expected = DuplicateKeyException.class)
     public void createWithTheSameDateTime() {
         Meal newMeal = new Meal(LocalDateTime.of(2018, 1, 1, 8, 0),
                 "Завтрак", 500);
-        service.create(newMeal, 100000);
+        service.create(newMeal, USER_ID);
     }
 }
