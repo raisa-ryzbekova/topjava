@@ -8,6 +8,7 @@ import ru.javawebinar.topjava.repository.UserRepository;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
+        Objects.requireNonNull(user, "user must not be null");
         if (user.isNew()) {
             user.setId(counter.incrementAndGet());
             repository.put(user.getId(), user);
@@ -56,6 +58,7 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
 
     @Override
     public User getByEmail(String email) {
+        Objects.requireNonNull(email, "email must not be null");
         return repository.values().stream()
                 .filter(u -> email.equals(u.getEmail()))
                 .findFirst()
