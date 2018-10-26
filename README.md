@@ -1,3 +1,7 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/447d62499e2649a19fa3ce8a2f90e5bd)](https://www.codacy.com/app/raisa-ryzbekova/topjava?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=raisa-ryzbekova/topjava&amp;utm_campaign=Badge_Grade)
+
+[![Build Status](https://travis-ci.org/raisa-ryzbekova/topjava.svg?branch=master)](https://travis-ci.org/raisa-ryzbekova/topjava)
+
 Java Enterprise Online Project 
 ===============================
 Разработка полнофункционального Spring/JPA Enterprise приложения c авторизацией и правами доступа на основе ролей с использованием наиболее популярных инструментов и технологий Java: Maven, Spring MVC, Security, JPA(Hibernate), REST(Jackson), Bootstrap (css,js), datatables, jQuery + plugins, Java 8 Stream and Time API и хранением в базах данных Postgresql и HSQLDB.
