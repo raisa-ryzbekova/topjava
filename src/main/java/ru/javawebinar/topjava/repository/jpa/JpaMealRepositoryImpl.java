@@ -9,7 +9,6 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,24 +22,23 @@ public class JpaMealRepositoryImpl implements MealRepository {
     @Override
     @Transactional
     public Meal save(Meal meal, int userId) {
+        User ref = em.getReference(User.class, userId);
+        meal.setUser(ref);
         if (meal.isNew()) {
-            User ref = em.getReference(User.class, userId);
-            meal.setUser(ref);
             em.persist(meal);
             return meal;
         } else {
-            Query query = em.createNamedQuery(Meal.UPDATE)
-                    .setParameter("id", meal.getId())
-                    .setParameter("user_id", userId)
-                    .setParameter("description", meal.getDescription())
-                    .setParameter("calories", meal.getCalories())
-                    .setParameter("date_time", meal.getDateTime());
-            int res = query.executeUpdate();
-            return res != 0 ? meal : null;
+            if (this.get(meal.getId(), userId) != null) {
+                em.merge(meal);
+                return meal;
+            } else {
+                return null;
+            }
         }
     }
 
     @Override
+    @Transactional
     public boolean delete(int id, int userId) {
         return em.createNamedQuery(Meal.DELETE)
                 .setParameter("id", id)
@@ -49,20 +47,20 @@ public class JpaMealRepositoryImpl implements MealRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Meal get(int id, int userId) {
-        Query query = em.createNamedQuery(Meal.GET)
-                .setParameter("id", id)
-                .setParameter("user_id", userId);
-        Meal meal = null;
         try {
-            meal = (Meal) query.getSingleResult();
-            return meal;
+            return em.createNamedQuery(Meal.GET, Meal.class)
+                    .setParameter("id", id)
+                    .setParameter("user_id", userId)
+                    .getSingleResult();
         } catch (NoResultException nre) {
             return null;
         }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Meal> getAll(int userId) {
         return em.createNamedQuery(Meal.ALL_SORTED, Meal.class)
                 .setParameter("user_id", userId)
@@ -70,6 +68,7 @@ public class JpaMealRepositoryImpl implements MealRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return em.createNamedQuery(Meal.GET_BETWEEN, Meal.class)
                 .setParameter("user_id", userId)

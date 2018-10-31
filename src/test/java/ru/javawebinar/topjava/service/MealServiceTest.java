@@ -1,11 +1,10 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestWatcher;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -21,8 +20,9 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -36,26 +36,26 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
-    private static List<String> testTimeData = new ArrayList();
+    private static Map<String, Long> testTimeData = new HashMap<>();
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
+    private static void logInfo(Description description, long timeTest) {
+        String testName = description.getMethodName();
+        log.info(String.format("Test %s, spent %.3s ms",
+                testName, String.valueOf(TimeUnit.MILLISECONDS.toMillis(timeTest))));
+    }
+
     @Rule
-    public TestWatcher watcherTest = new TestWatcher() {
-        private long startTime;
-
+    public Stopwatch stopwatch = new Stopwatch() {
         @Override
-        protected void starting(Description description) {
-            startTime = System.currentTimeMillis();
-        }
-
-        @Override
-        protected void finished(Description description) {
-            long testTimeExecute = System.currentTimeMillis() - startTime;
-            log.info("test executed in {} ms", testTimeExecute);
-            testTimeData.add("\nTest name: " + description.getMethodName() + ", time: " + testTimeExecute + " ms");
+        protected void finished(long timeTest, Description description) {
+            logInfo(description, timeTest);
+            long timeMs = TimeUnit.MILLISECONDS.toMillis(timeTest);
+            testTimeData.put(description.getMethodName(), timeMs);
         }
     };
 
@@ -72,13 +72,8 @@ public class MealServiceTest {
         assertMatch(service.getAll(USER_ID), MEAL6, MEAL5, MEAL4, MEAL3, MEAL2);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void deleteNotFound() throws Exception {
-        service.delete(MEAL1_ID, 1);
-    }
-
     @Test
-    public void deleteNotFoundExceptionCheck() {
+    public void deleteNotFound() {
         exception.expect(NotFoundException.class);
         exception.expectMessage(containsString("Not found entity with id=" + MEAL1_ID));
         service.delete(MEAL1_ID, 1);
@@ -97,13 +92,8 @@ public class MealServiceTest {
         assertMatch(actual, ADMIN_MEAL1);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void getNotFound() throws Exception {
-        service.get(MEAL1_ID, ADMIN_ID);
-    }
-
     @Test
-    public void getNotFoundExceptionCheck() {
+    public void getNotFound() {
         exception.expect(NotFoundException.class);
         exception.expectMessage(containsString("Not found entity with id=" + MEAL1_ID));
         service.get(MEAL1_ID, ADMIN_ID);
@@ -116,13 +106,8 @@ public class MealServiceTest {
         assertMatch(service.get(MEAL1_ID, USER_ID), updated);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void updateNotFound() throws Exception {
-        service.update(MEAL1, ADMIN_ID);
-    }
-
     @Test
-    public void updateNotFoundExceptionCheck() {
+    public void updateNotFound() {
         exception.expect(NotFoundException.class);
         exception.expectMessage(containsString("Not found entity with id=" + MEAL1_ID));
         service.update(MEAL1, ADMIN_ID);
@@ -142,8 +127,20 @@ public class MealServiceTest {
 
     @AfterClass
     public static void outTestTimeData() {
-        log.info("\n-------------------------------\n");
-        log.info("" + testTimeData);
-        log.info("\n-------------------------------\n");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(System.lineSeparator());
+        stringBuilder.append("-------------------------------");
+        stringBuilder.append(System.lineSeparator());
+        stringBuilder.append("    TEST            TIME(ms)");
+        stringBuilder.append(System.lineSeparator());
+        stringBuilder.append("-------------------------------");
+        stringBuilder.append(System.lineSeparator());
+        for (String s : testTimeData.keySet()) {
+            stringBuilder.append(String.format("%-20s %.3s", s, String.valueOf(testTimeData.get(s))))
+                    .append(System.lineSeparator());
+        }
+        stringBuilder.append("-------------------------------");
+        stringBuilder.append(System.lineSeparator());
+        log.info(stringBuilder.toString());
     }
 }
