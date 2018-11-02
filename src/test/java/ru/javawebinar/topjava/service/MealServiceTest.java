@@ -45,8 +45,8 @@ public class MealServiceTest {
 
     private static void logInfo(Description description, long timeTest) {
         String testName = description.getMethodName();
-        log.info(String.format("Test %s, spent %.3s ms",
-                testName, String.valueOf(TimeUnit.MILLISECONDS.toMillis(timeTest))));
+        log.info(String.format("Test %s, spent %d ms",
+                testName, TimeUnit.MILLISECONDS.toMillis(timeTest)));
     }
 
     @Rule
@@ -54,7 +54,7 @@ public class MealServiceTest {
         @Override
         protected void finished(long timeTest, Description description) {
             logInfo(description, timeTest);
-            long timeMs = TimeUnit.MILLISECONDS.toMillis(timeTest);
+            long timeMs = TimeUnit.MILLISECONDS.toMillis(timeTest) / 1000000;
             testTimeData.put(description.getMethodName(), timeMs);
         }
     };
@@ -136,7 +136,7 @@ public class MealServiceTest {
         stringBuilder.append("-------------------------------");
         stringBuilder.append(System.lineSeparator());
         for (String s : testTimeData.keySet()) {
-            stringBuilder.append(String.format("%-20s %.3s", s, String.valueOf(testTimeData.get(s))))
+            stringBuilder.append(String.format("%-20s %d", s, testTimeData.get(s)))
                     .append(System.lineSeparator());
         }
         stringBuilder.append("-------------------------------");
