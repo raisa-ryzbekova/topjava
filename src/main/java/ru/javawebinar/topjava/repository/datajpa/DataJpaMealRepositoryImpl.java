@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-@Profile("datajpa")
 public class DataJpaMealRepositoryImpl implements MealRepository {
 
     private final CrudMealRepository crudMealRepository;
@@ -34,12 +32,7 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        Meal meal = this.get(id, userId);
-        if (meal != null) {
-            return crudMealRepository.delete(id) != 0;
-        } else {
-            return false;
-        }
+        return crudMealRepository.deleteMealByIdAndUserId(id, userId) != 0;
     }
 
     @Override
