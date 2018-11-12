@@ -15,7 +15,7 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
     private CrudMealRepository crudRepository;
 
     @Override
-    public Meal save(Meal Meal, int userId) {
+    public Meal save(Meal meal, int userId) {
         return null;
     }
 
