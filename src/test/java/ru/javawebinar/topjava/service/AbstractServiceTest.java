@@ -8,11 +8,13 @@ import org.junit.rules.ExternalResource;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.core.env.Environment;
 import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.TimingRules;
 
@@ -41,6 +43,9 @@ abstract public class AbstractServiceTest {
         SLF4JBridgeHandler.install();
     }
 
+    @Autowired
+    private Environment environment;
+
     //  Check root cause in JUnit: https://github.com/junit-team/junit4/pull/778
     public <T extends Throwable> void validateRootCause(Runnable runnable, Class<T> exceptionClass) {
         try {
@@ -49,5 +54,14 @@ abstract public class AbstractServiceTest {
         } catch (Exception e) {
             Assert.assertThat(getRootCause(e), instanceOf(exceptionClass));
         }
+    }
+
+    public boolean isJdbc() {
+        for (String profile : environment.getActiveProfiles()) {
+            if (profile.equals("jdbc")) {
+                return false;
+            }
+        }
+        return true;
     }
 }
