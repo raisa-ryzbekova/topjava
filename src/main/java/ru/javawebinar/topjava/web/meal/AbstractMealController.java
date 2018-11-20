@@ -20,14 +20,16 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 public abstract class AbstractMealController {
 
-    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private final MealService service;
+    private MealService service;
 
-    @Autowired
     public AbstractMealController(MealService service) {
         this.service = service;
+    }
+
+    public AbstractMealController() {
     }
 
     public Meal get(int id) {

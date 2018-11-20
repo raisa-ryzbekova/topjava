@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 
@@ -19,38 +20,39 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 @Controller
+@RequestMapping(value = "/meals")
 public class JspMealController extends AbstractMealController {
 
     public JspMealController(MealService service) {
         super(service);
     }
 
-    @GetMapping({"/meals", "/meals/all"})
+    @GetMapping({"", "/all"})
     public String meals(Model model) {
         model.addAttribute("meals", getAll());
         return "meals";
     }
 
-    @GetMapping("/meals/create")
+    @GetMapping("/create")
     public String createMeals(Model model) {
         final Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
         model.addAttribute("meal", meal);
         return "mealForm";
     }
 
-    @GetMapping("/meals/update/{id}")
+    @GetMapping("/update/{id}")
     public String updateMeals(Model model, @PathVariable int id) {
         model.addAttribute("meal", get(id));
         return "mealForm";
     }
 
-    @GetMapping("/meals/delete/{id}")
+    @GetMapping("/delete/{id}")
     public String deleteMeals(Model model, @PathVariable int id) {
         delete(id);
         return "redirect:/meals";
     }
 
-    @PostMapping("/meals")
+    @PostMapping("")
     public String setMeal(HttpServletRequest request) {
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),

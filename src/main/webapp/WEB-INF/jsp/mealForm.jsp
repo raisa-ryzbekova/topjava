@@ -5,26 +5,19 @@
 <html>
 <jsp:include page="fragments/headTag.jsp"/>
 <head>
+    <base href="${pageContext.request.contextPath}/">
     <title>Meal</title>
-    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <h3><a href="index.html"><spring:message code="app.home"/></a></h3>
     <h2>
-        <c:choose>
-            <c:when test="${meal.id == null}">
-                <spring:message code="meal.createmeal"/>
-            </c:when>
-            <c:otherwise>
-                <spring:message code="meal.editmeal"/>
-            </c:otherwise>
-        </c:choose>
+        <spring:message code="meal.${meal.id == null?'createmeal':'editmeal'}"/>
     </h2>
     <hr>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-    <form method="post" action="${pageContext.request.contextPath}/meals">
+    <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.datetime"/>:</dt>
