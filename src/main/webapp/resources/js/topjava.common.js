@@ -12,10 +12,9 @@ function add() {
 function deleteRow(id) {
     $.ajax({
         url: ajaxUrl + id,
-        type: "DELETE",
-        success: function () {
-            updateTable();
-        }
+        type: "DELETE"
+    }).done(function () {
+        updateTable();
     });
 }
 
@@ -26,14 +25,13 @@ function updateTable() {
 }
 
 function save() {
-    var form = $("#detailsForm");
+    let form = $("#detailsForm");
     $.ajax({
         type: "POST",
         url: ajaxUrl,
-        data: form.serialize(),
-        success: function () {
-            $("#editRow").modal("hide");
-            updateTable();
-        }
+        data: form.serialize()
+    }).done(function () {
+        $("#editRow").modal("hide");
+        updateTable();
     });
 }
