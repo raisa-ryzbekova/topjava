@@ -9,7 +9,7 @@ import ru.javawebinar.topjava.model.User;
 import java.util.List;
 
 @RestController
-@RequestMapping("/ajax/admin/users")
+@RequestMapping("ajax/admin/users")
 public class AdminAjaxController extends AbstractUserController {
 
     @Override
