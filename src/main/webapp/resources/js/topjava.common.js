@@ -1,8 +1,8 @@
-function makeEditable() {
-    $(".delete").click(function () {
-        deleteRow($(this).attr("id"));
-    });
+let context, form;
 
+function makeEditable(ctx) {
+    context = ctx;
+    form = $('#detailsForm');
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);
     });
@@ -12,35 +12,32 @@ function makeEditable() {
 }
 
 function add() {
-    $("#detailsForm").find(":input").val("");
+    form.find(":input").val("");
     $("#editRow").modal();
 }
 
 function deleteRow(id) {
     $.ajax({
-        url: ajaxUrl + id,
+        url: context.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        context.updateTable();
         successNoty("Deleted");
     });
 }
 
-function updateTable() {
-    $.get(ajaxUrl, function (data) {
-        datatableApi.clear().rows.add(data).draw();
-    });
+function updateTableByData(data) {
+    context.datatableApi.clear().rows.add(data).draw();
 }
 
 function save() {
-    let form = $("#detailsForm");
     $.ajax({
         type: "POST",
-        url: ajaxUrl,
+        url: context.ajaxUrl,
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
+        context.updateTable();
         successNoty("Saved");
     });
 }
